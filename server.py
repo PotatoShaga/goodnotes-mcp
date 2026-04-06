@@ -220,7 +220,7 @@ def view_page(file_path: str, page: int = 0) -> list:
 
     # Return image + metadata
     return [
-        Image(data=img_bytes, media_type="image/jpeg"),
+        Image(data=img_bytes, format="jpeg"),
         f"Page {page + 1}/{total_pages} of {file_path.split('/')[-1]}  ({len(img_bytes) // 1024} KB)",
     ]
 
