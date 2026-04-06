@@ -149,7 +149,7 @@ def _render_page(pdf_bytes: bytes, page_num: int, max_kb: int = 750) -> tuple[by
 
 # ── MCP Server ────────────────────────────────────────────────────────────────
 
-mcp = FastMCP("goodnotes-viewer", host="0.0.0.0", port=int(os.environ.get("PORT", 8000)), path=f"/mcp/{API_SECRET}")
+mcp = FastMCP("goodnotes-viewer")
 
 
 @mcp.tool()
@@ -263,5 +263,19 @@ def search_files(query: str) -> str:
 
 # ── Entry Point ───────────────────────────────────────────────────────────────
 
+API_SECRET = os.environ.get("API_SECRET", "changeme")
+
 if __name__ == "__main__":
-    mcp.run(transport="streamable-http")
+    import uvicorn
+    from starlette.applications import Starlette
+    from starlette.routing import Mount
+    from starlette.responses import PlainTextResponse
+
+    mcp_app = mcp.streamable_http_app()
+
+    app = Starlette(routes=[
+        Mount(f"/{API_SECRET}", app=mcp_app),
+    ])
+
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
