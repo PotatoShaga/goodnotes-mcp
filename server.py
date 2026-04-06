@@ -28,6 +28,8 @@ DROPBOX_APP_SECRET = os.environ["DROPBOX_APP_SECRET"]
 # Typical values: "" (search everything) or "/Apps/Goodnotes"
 GOODNOTES_ROOT = os.environ.get("GOODNOTES_ROOT", "")
 
+API_SECRET = os.environ.get("API_SECRET", "changeme")
+
 
 # ── Dropbox Authentication ────────────────────────────────────────────────────
 
@@ -147,7 +149,7 @@ def _render_page(pdf_bytes: bytes, page_num: int, max_kb: int = 750) -> tuple[by
 
 # ── MCP Server ────────────────────────────────────────────────────────────────
 
-mcp = FastMCP("goodnotes-viewer", host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
+mcp = FastMCP("goodnotes-viewer", host="0.0.0.0", port=int(os.environ.get("PORT", 8000)), path=f"/mcp/{API_SECRET}")
 
 
 @mcp.tool()
