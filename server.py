@@ -149,8 +149,7 @@ def _render_page(pdf_bytes: bytes, page_num: int, max_kb: int = 750) -> tuple[by
 
 # ── MCP Server ────────────────────────────────────────────────────────────────
 
-mcp = FastMCP("goodnotes-viewer")
-
+mcp = FastMCP("goodnotes-viewer", host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
 
 @mcp.tool()
 def list_files(subfolder: str = "") -> str:
