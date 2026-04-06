@@ -267,15 +267,21 @@ API_SECRET = os.environ.get("API_SECRET", "changeme")
 
 if __name__ == "__main__":
     import uvicorn
+    from contextlib import asynccontextmanager
     from starlette.applications import Starlette
     from starlette.routing import Mount
-    from starlette.responses import PlainTextResponse
 
-    mcp_app = mcp.streamable_http_app()
+    mcp_asgi = mcp.streamable_http_app()
 
-    app = Starlette(routes=[
-        Mount(f"/{API_SECRET}", app=mcp_app),
-    ])
+    @asynccontextmanager
+    async def lifespan(app):
+        async with mcp.session_manager.run():
+            yield
+
+    app = Starlette(
+        routes=[Mount(f"/{API_SECRET}", app=mcp_asgi)],
+        lifespan=lifespan,
+    )
 
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
